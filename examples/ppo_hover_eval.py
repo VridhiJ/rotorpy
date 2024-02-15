@@ -1,4 +1,5 @@
 import gymnasium as gym
+import imageio
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -177,6 +178,7 @@ for (k, num_timesteps_idx) in enumerate(num_timesteps_idxs):  # For each num_tim
                 if env.unwrapped.rendering:
                     frame = os.path.join(frame_path, 'frame_'+str(j)+'.png')
                     fig.savefig(frame)
+                    gif_frames.append(imageio.v2.imread(frame))
                     j += 1
 
         # Append arrays for plotting.
@@ -213,5 +215,7 @@ for (k, num_timesteps_idx) in enumerate(num_timesteps_idxs):  # For each num_tim
 
     # Save fig. 
     fig_pos.savefig(os.path.join(frame_path, 'position_vs_time.png'))
+    # Save gif
+    imageio.mimsave(os.path.join(frame_path, 'position_vs_time.gif'), gif_frames, duration= 0.1)
 
-plt.show()
+#plt.show()
