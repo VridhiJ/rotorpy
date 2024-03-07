@@ -76,7 +76,7 @@ epoch_count = 0
 training_model_num = "0"
 flag = 0
 subprocess_timer = time.time()
-script_path = "ppo_hover_eval.py"
+script_path = "ppo_hover_eval_gif.py"
 
 while True:  # Run indefinitely..
 
