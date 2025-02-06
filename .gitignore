@@ -129,4 +129,4 @@ dmypy.json
 .pyre/
 
 sandbox.py
-waypoint_traj.py
+waypoint_traj.pyrotorpy-env/
