@@ -184,7 +184,7 @@ class QuadrotorEnv(gym.Env):
             # Close the plots
             plt.close('all')
     
-    def reset(self, seed=None, initial_state='random', options={'pos_bound': 2, 'vel_bound': 0}):
+    def reset(self, seed=None, options = None):
         """
         Reset the environment
         Inputs:
@@ -207,9 +207,19 @@ class QuadrotorEnv(gym.Env):
                         'vel_bound': the min/max velocity region for random placement
                                 
         """
-        assert options['pos_bound'] >= 0 and options['vel_bound'] >= 0 , "Bounds must be greater than or equal to 0."
+        # If any options are not specified, set them to default values.
+        if options is None:
+            options = {'initial state' : 'random', 'pos_bound': 2, 'vel_bound': 0}
+        else:
+            # Ensure defaults for any missing keys
+            options.setdefault('initial_state', 'random')
+            options.setdefault('pos_bound', 2)
+            options.setdefault('vel_bound', 0)
 
+        assert options['pos_bound'] >= 0 and options['vel_bound'] >= 0 , "Bounds must be greater than or equal to 0."
+        
         super().reset(seed=seed)
+        initial_state = options['initial_state']
 
         if initial_state == 'random':
             # Randomly select an initial state for the quadrotor. At least assume it is level. 
