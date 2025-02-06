@@ -184,7 +184,7 @@ class QuadrotorEnv(gym.Env):
             # Close the plots
             plt.close('all')
     
-    def reset(self, seed=None, options=None):
+    def reset(self, seed=None, initial_state='random', options={'pos_bound': 2, 'vel_bound': 0}):
         """
         Reset the environment
         Inputs:
@@ -207,20 +207,9 @@ class QuadrotorEnv(gym.Env):
                         'vel_bound': the min/max velocity region for random placement
                                 
         """
-        # If any options are not specified, set them to default values.
-        if options is None:
-            options = {'initial state' : 'random', 'pos_bound': 2, 'vel_bound': 0}
-        else:
-            # Ensure defaults for any missing keys
-            options.setdefault('initial_state', 'random')
-            options.setdefault('pos_bound', 2)
-            options.setdefault('vel_bound', 0)
-
-
         assert options['pos_bound'] >= 0 and options['vel_bound'] >= 0 , "Bounds must be greater than or equal to 0."
 
         super().reset(seed=seed)
-        initial_state = options['initial_state']
 
         if initial_state == 'random':
             # Randomly select an initial state for the quadrotor. At least assume it is level. 
@@ -236,10 +225,10 @@ class QuadrotorEnv(gym.Env):
         elif initial_state == 'deterministic':
             state = self.initial_state
         
-        elif isinstance(options['initial_state'], dict):
+        elif isinstance(initial_state, dict):
             # Ensure the correct keys are in dict.  
-            if all(key in options['initial_state'] for key in ('x', 'v', 'q', 'w', 'wind', 'rotor_speeds')):
-                state = options['initial_state']
+            if all(key in initial_state for key in ('x', 'v', 'q', 'w', 'wind', 'rotor_speeds')):
+                state = initial_state
             else:
                 raise KeyError("Missing state keys in your initial_state. You must specify values for ('x', 'v', 'q', 'w', 'wind', 'rotor_speeds')")
 
