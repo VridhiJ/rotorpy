@@ -178,6 +178,7 @@ for (k, num_timesteps_idx) in enumerate(num_timesteps_idxs):  # For each num_tim
                 if env.unwrapped.rendering:
                     frame = os.path.join(frame_path, 'frame_'+str(j)+'.png')
                     fig.savefig(frame)
+                    #frames for gif
                     gif_frames.append(imageio.v2.imread(frame))
                     j += 1
 
