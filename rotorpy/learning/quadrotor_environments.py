@@ -209,7 +209,7 @@ class QuadrotorEnv(gym.Env):
         """
         # If any options are not specified, set them to default values.
         if options is None:
-            options = {'initial state' : 'random', 'pos_bound': 2, 'vel_bound': 0}
+            options = {'initial_state' : 'random', 'pos_bound': 2, 'vel_bound': 0}
         else:
             # Ensure defaults for any missing keys
             options.setdefault('initial_state', 'random')
@@ -217,7 +217,7 @@ class QuadrotorEnv(gym.Env):
             options.setdefault('vel_bound', 0)
 
         assert options['pos_bound'] >= 0 and options['vel_bound'] >= 0 , "Bounds must be greater than or equal to 0."
-        
+
         super().reset(seed=seed)
         initial_state = options['initial_state']
 
