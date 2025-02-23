@@ -1,7 +1,9 @@
 import gymnasium as gym
+import numpy as np
 import os
 from datetime import datetime
 from eval import evaluate_model
+from rotorpy.wind.dryden_winds import DrydenGust
 
 from rotorpy.vehicles.crazyflie_params import quad_params  # Import quad params for the quadrotor environment.
 
@@ -12,14 +14,9 @@ from rotorpy.learning.quadrotor_environments import QuadrotorEnv
 from rotorpy.learning.quadrotor_reward_functions import hover_reward
 
 """
-In this script, we demonstrate how to train a hovering control policy in RotorPy using Proximal Policy Optimization. 
-We use our custom quadrotor environment for Gymnasium along with stable baselines for the PPO implementation. 
+Here we check the progress of our training with periodic evaluations.
 
-The task is for the quadrotor to stabilize to hover at the origin when starting at a random position nearby. 
-
-Training can be tracked using tensorboard, e.g. tensorboard --logdir=<log_dir>
-
-Here we can also check the progress of our training with periodic evaluations.
+We will also track the agents under different wind conditions.
 
 """
 
@@ -52,6 +49,7 @@ env = gym.make("Quadrotor-v0",
                 reward_fn = reward_function,
                 quad_params = quad_params,
                 max_time = 5,
+                wind_profile = DrydenGust(dt=1 / 100, sig_wind=np.array([75, 75, 30]),altitude=2.0),
                 world = None,
                 sim_rate = 100,
                 render_mode='None')
