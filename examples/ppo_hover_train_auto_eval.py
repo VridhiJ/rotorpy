@@ -1,8 +1,4 @@
-import subprocess
-import time
 import gymnasium as gym
-import numpy as np
-import matplotlib.pyplot as plt
 import os
 from datetime import datetime
 from eval import evaluate_model
@@ -22,6 +18,8 @@ We use our custom quadrotor environment for Gymnasium along with stable baseline
 The task is for the quadrotor to stabilize to hover at the origin when starting at a random position nearby. 
 
 Training can be tracked using tensorboard, e.g. tensorboard --logdir=<log_dir>
+
+Here we can also check the progress of our training with periodic evaluations.
 
 """
 
@@ -58,14 +56,20 @@ env = gym.make("Quadrotor-v0",
                 sim_rate = 100,
                 render_mode='None')
 
-# from stable_baselines3.common.env_checker import check_env
-# check_env(env, warn=True)  # you can check the environment using built-in tools
 
 # Reset the environment
 observation, info = env.reset(options={'initial_state': 'random','pos_bound': 2, 'vel_bound': 0})
 
 # Create a new model
 model = PPO(MlpPolicy, env, verbose=1, ent_coef=0.01, tensorboard_log=log_dir)
+
+# Ask the user if they want to run evaluation periodically to see progress
+auto_eval = input("Would you like to get training progress updates? (Y/N): ").strip().lower() == "y"
+
+# If yes, ask user how frequently would they like to run the evaluation script
+if auto_eval:
+    eval_freq = int(input("How frequently would you like to run the evaluation? Enter a number: ").strip())
+    
 
 # Training...
 num_timesteps = 20_000
@@ -83,54 +87,8 @@ while True:  # Run indefinitely..
     model_path = f"{models_dir}/PPO/{start_time.strftime('%H-%M-%S')}/hover_{num_timesteps*(epoch_count+1)}"
     model.save(model_path)
 
-    # runs evaluation script every 5 epochs
-    if epoch_count%5 == 0: 
+    # runs evaluation script periodically
+    if auto_eval and epoch_count%(eval_freq) == 0: 
         evaluate_model(model_path)
 
     epoch_count += 1
-    
-
-    
-    
-
-
-'''
-    if num_timesteps % 500000 == 0:
-        # Run another file here
-        script_path = "ppo_hover_eval.py"
-        # Run the script using subprocess
-        subprocess.run(["python", script_path])
-'''
-
-"""
-
-training_model_num = "0"
-flag = 0
-subprocess_timer = time.time()
-script_path = "ppo_hover_eval.py"
-
-### within loop
-models_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "rotorpy", "learning", "policies",
-                              "PPO")
-
-    models_available = os.listdir(models_dir)
-    if flag == 0:
-        for i, name in enumerate(models_available):
-            if name in "PPO-Quad_cmd-motor_" + start_time.strftime('%H-%M-%S'):
-                training_model_num = str(i)
-                flag = 1
-# Check if 5 minutes have elapsed since the last subprocess run
-    if time.time() - subprocess_timer >= 300:  # 300 seconds = 5 minutes
-
-        # Open the subprocess and specify stdin=subprocess.PIPE to allow input
-        process = subprocess.Popen(["python", script_path], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE, text=True)
-        # the inputs to be passed to the subprocess
-        inputs = f"{training_model_num}\n{epoch_count}\n"
-
-        # Pass the inputs to the subprocess using communicate()
-        output, error = process.communicate(inputs)
-
-        # Reset the subprocess timer
-        subprocess_timer = time.time()
-"""
