@@ -5,7 +5,9 @@ from rotorpy.vehicles.crazyflie_params import quad_params
 from rotorpy.learning.quadrotor_environments import QuadrotorEnv
 from rotorpy.learning.quadrotor_reward_functions import hover_reward
 from rotorpy.controllers.quadrotor_control import SE3Control
+from rotorpy.wind.dryden_winds import DrydenGust
 from stable_baselines3 import PPO
+
 
 """
 Tracking the 10 agents for 2 seconds.
@@ -34,6 +36,7 @@ def evaluate_model(model_path, num_quads=10):
                         reward_fn=reward_function,
                         quad_params=quad_params,
                         max_time=2,
+                        wind_profile = DrydenGust(dt=1 / 100, sig_wind=np.array([75, 75, 30]),altitude=2.0), 
                         world=None,
                         sim_rate=100,
                         render_mode='3D',
