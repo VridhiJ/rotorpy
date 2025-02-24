@@ -13,7 +13,7 @@ from stable_baselines3 import PPO
 Tracking the 10 agents for 2 seconds.
 """
 
-def evaluate_model(model_path, num_quads=10):
+def evaluate_model(model_path, num_timesteps, selected_scenario = "No wind", num_quads=10):
     """
     Evaluates the trained policy for hovering using PPO.
     :param model_path: Path to the trained model files
@@ -29,6 +29,7 @@ def evaluate_model(model_path, num_quads=10):
     # Set up figure for visualization
     fig = plt.figure()
     ax = fig.add_subplot(projection='3d')
+    fig.suptitle(f"Scenario: {selected_scenario}, Num Timesteps: {num_timesteps}")
 
     def make_env():
         return gym.make("Quadrotor-v0", 
@@ -51,6 +52,7 @@ def evaluate_model(model_path, num_quads=10):
                           reward_fn=reward_function,
                           quad_params=quad_params,
                           max_time=2,
+                          wind_profile = DrydenGust(dt=1 / 100, sig_wind=np.array([75, 75, 30]),altitude=2.0),
                           world=None,
                           sim_rate=100,
                           render_mode='3D',
